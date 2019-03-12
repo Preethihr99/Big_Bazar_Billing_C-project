@@ -1,0 +1,442 @@
+#include<conio.h>
+#include<fstream>
+#include<iostream>
+#include<windows.h>
+using namespace std;
+inline void SetColor(WORD color)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),color);
+}
+class color
+{
+	public:
+		color(WORD val) : m_val(val){}
+		void set() const{
+		SetColor(m_val);
+		}
+		private:WORD m_val;
+};
+static const color blue(1);
+static const color green(2);
+static const color cyan(3);
+static const color red(4);
+static const color purple(5);
+static const color darkyellow(6);
+static const color white(7);
+static const color gray(8);
+static const color brightblue(9);
+static const color brightgreen(10);
+static const color brightcyan(11);
+static const color brightred(12);
+static const color pink(13);
+static const color yellow(14);
+static const color brightwhite(15);
+inline std::ostream& operator<<(std::ostream& os,const color& c)
+{
+	c.set();
+	return os;
+}
+class product
+{
+	int prdno;
+	char name[50];
+	int total=0;
+	float price,qty,tax,dis;
+	public: 
+		void create_product();
+		void admin_menu();
+		void intro();
+		void place_order();
+		void menu();
+		void delete_product(int);
+		void modify_product();
+		void display_all();
+		void write_product();
+		void display_all(int);
+		void show_product();
+		product operator+=(int damt);
+		friend ostream& operator<<(ostream&,product);
+		void login_logo();
+		void login_menu();
+		int retprdno()
+		{
+			return prdno;
+		}
+		float retprice()
+		{
+			return price;
+		}
+		char* retname()
+		{
+			return name;
+		}
+		int retdis()
+		{
+			return dis;
+		}
+};
+fstream fp;
+product pr;
+void product::create_product()
+{
+	cout<<brightcyan<<color(11)<<endl;
+	cout<<"\n\n\t\t\t\t\t\t\t^^^^^^^^^^^^^^^^^^^^^^^^ PLEASE ENTER THE NEW PRODUCT DETAILS ^^^^^^^^^^^^^^^^^^^^^^^^^^";
+	cout<<"\n\n\n\t\t\t\t\t\t\t\tPlease enter the Product No. of the product : ";
+	cin>>prdno;
+	cout<<"\n\n\n\t\t\t\t\t\t\t\tPlease enter the Name of the product : ";
+	cin>>name;
+	cout<<"\n\n\n\t\t\t\t\t\t\t\tPlease enter the Price of the product : ";
+	cin>>price;
+	cout<<"\n\n\n\t\t\t\t\t\t\t\tPlease enter the Discount(%) : ";
+	cin>>dis;
+}
+void product::show_product()
+{
+	cout<<cyan<<color(3)<<endl;
+	cout<<"\n\n\t\t\t\t\t\t\t\t\t\tThe Product No. of the product : "<<prdno;
+	cout<<"\n\n\n\t\t\t\t\t\t\t\t\t\tThe Name of the product : ";
+	cout<<name;
+	cout<<"\n\n\n\t\t\t\t\t\t\t\t\t\tThe Price of the product : "<<price;
+	cout<<"\n\n\n\t\t\t\t\t\t\t\t\t\tDiscount : "<<dis;
+}
+void product::write_product()
+{
+	cout<<green<<color(2)<<endl;
+	fp.open("Shop.dat",ios::out|ios::app);
+	pr.create_product();
+	fp.write((char*)&pr,sizeof(product));
+	fp.close();
+	cout<<"\n\n\n\n\n\n\t\t\t\t\t\t\t\tThe Product has been created ";
+	getch();
+}
+void product::display_all()
+{
+	cout<<pink<<color(13)<<endl;
+	system("cls");
+	cout<<"\n\n\n\t\t\t\t\t&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& !!!   DISPLAY ALL RECORD   !!! &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n\n\n";
+	fp.open("Shop.dat",ios::in);
+	while(fp.read((char*)&pr,sizeof(product)))
+	{
+		pr.show_product();
+		cout<<"\n\n=====================================================================+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++======================================================\n";
+		getch();
+	}
+	fp.close();
+	getch();
+}
+void product::display_all(int n)
+{
+	cout<<purple<<color(5)<<endl;
+	int flag=0;
+	fp.open("Shop.dat",ios::in);
+	while(fp.read((char*)&pr,sizeof(product)))
+	{
+		if(pr.retprdno()==n)
+		{
+			system("cls");
+			pr.show_product();
+			flag=1;
+		}
+	}
+	fp.close();
+	if(flag==0)
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\t\t\trecord not exist";
+	getch();
+}
+void product::modify_product()
+{
+	cout<<darkyellow<<color(6)<<endl;
+	int no,found=0;
+	system("cls");
+	cout<<"\n\n\t\t\t\t\t\t\t#######################################   TO MODIFY   #########################################\t";
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\t\tPlease enter the Product No. of the Product : ";
+	cin>>no;
+	fp.open("Shop.dat",ios::in|ios::out);
+	while(fp.read((char*)&pr,sizeof(product))&&found==0)
+	{
+		if(pr.retprdno()==no)
+		{
+			pr.show_product();
+			pr.create_product();
+			int pos=(-1)*sizeof(pr);
+			fp.seekp(pos,ios::cur);
+			fp.write((char*)&pr,sizeof(product));
+			cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\t\t\t Record Updated ";
+			found=1;
+		}
+	}
+	fp.close();
+	if(found==0)
+	cout<<"\n\n\n\t\t\t\t\t\t\t\t\t\t\t Record Not Found ";
+	getch();
+}
+void product::delete_product(int no=0)
+{
+	cout<<yellow<<color(14)<<endl;
+	system("cls");
+	cout<<"\n\n\n\t\t\t\t\t???????????????????????????????????????????    DELETE  RECORD   ????????????????????????????????????????????????";
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\tPlease enter the product No. of the product you want to delete :  ";
+	cin>>no;
+	fp.open("Shop.dat",ios::in|ios::out);
+	fstream fp2;
+	fp2.open("Temp.dat",ios::out);
+	fp.seekg(0,ios::beg);
+	while(fp.read((char*)&pr,sizeof(product)))
+	{
+		if(pr.retprdno()!=no)
+		{
+			fp2.write((char*)&pr,sizeof(product));
+		}
+	}
+	fp2.close();
+	fp.close();
+	remove("Shop.dat");
+	rename("Temp.dat","Shop.dat");
+	cout<<"\n\n\n\n\n\n\t\t\t\t\t\t\t!!!!!!!!!!!!!!!!!!!!!!!!!!!  Record Deleted....  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+	getch();
+}
+void product::menu()
+{
+	cout<<brightblue<<color(9)<<endl;
+	system("cls");
+	fp.open("Shop.dat",ios::in);
+	if(!fp)
+	{
+		cout<<"ERROR!!! FILE COULD NOT BE OPEN\n\n\n Go To Admin Menu to create File";
+		cout<<"\n\n\n Program is Closing....";
+		getch();
+		exit(0);
+	}
+	cout<<"\n\n\t\t\t\t\t\t\t\t\t\tPRODUCT MENU\n\n";
+	cout<<"*************************==============================================================================================================================================***************************\n";
+	cout<<"\t\t\t\t\tP.NO.\t\t\t\t\t\tNAME\t\t\t\t\t\tPRICE\n";
+	cout<<"*************************==============================================================================================================================================***************************\n";
+	while(fp.read((char*)&pr,sizeof(product)))
+	{
+		cout<<"\t\t\t\t\t"<<pr.retprdno()<<"\t\t\t\t\t\t"<<pr.retname()<<"\t\t\t\t\t\t"<<pr.retprice()<<endl;
+	}
+	fp.close();
+}
+product product::operator+=(int damt)
+{
+	total=total+damt;
+	return *this;
+}
+void product::place_order()
+{
+	product p;
+	cout<<gray<<color(8)<<endl;
+	int order_arr[50],quan[50],c=0;
+	float amt,damt;
+	char ch='Y';
+	menu();
+	cout<<"\n\n\n\n\n******************************************==========================================================================================================================*****************************";
+	cout<<"\n               \t\t\t\t\t\t\t\t\t\t -->>PLACE YOUR ORDER<<--";
+	cout<<"\n******************************************==========================================================================================================================*****************************\n";
+	do
+	{
+		cout<<"\n\n\t\t\t\t\t\t\tEnter the Product No. of the Product :";
+		cin>>order_arr[c];
+		cout<<"\n\t\t\t\t\t\t\tQuantity in number :";
+		cin>>quan[c];
+		c++;
+		cout<<"\n\t\t\t\t\t\t\tDo you want to order another product ?(y/n)";
+		cin>>ch;
+	}
+	while(ch=='y'||ch=='Y');
+	cout<<"\n\t\t\t\t\t\t\tThank You for placing the order";
+	getch();
+	system("cls");
+	cout<<brightwhite<<color(15)<<endl;
+	cout<<"\n******************************************************************~~~~~~~~~~~~~~~~~~~~~~~~~~~~   INVOICE   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~************************************************************\n";
+	cout<<"\n\tProduct No.\t\t\tProduct Name\t\t\tProduct Quantity\t\t\tProduct Price\t\t\tProduct Amount\t\t\tAmount for Discount\n";
+	for(int x=0;x<=c;x++)
+	{
+		fp.open("Shop.dat",ios::in);
+		fp.read((char*)&pr,sizeof(product));
+		while(!fp.eof())
+		{
+			if(pr.retprdno()==order_arr[x])
+			{
+				amt=pr.retprice()*quan[x];
+				damt=amt-(amt*pr.retdis()/100);
+				cout<<"\n\t\t"<<order_arr[x]<<"\t\t\t\t"<<pr.retname()<<"\t\t\t\t"<<quan[x]<<"\t\t\t\t"<<pr.retprice()<<"\t\t\t\t"<<amt<<"\t\t\t\t"<<damt;
+				p+=damt;
+				cout<<p;
+			}
+			fp.read((char*)&pr,sizeof(product));
+		}
+		fp.close();
+	}
+}
+ostream& operator<<(ostream& out,product p1)
+{
+	out<<"\n\n\n\n\t\t\t\t\t\t\t\t\t\t\t\tTotal Amount = "<<p1.total<<endl;
+	return out;
+}
+void gotoxy(int x,int y)
+{
+	HANDLE Manipulador;
+	COORD Coordenadas;
+	Manipulador=GetStdHandle(STD_OUTPUT_HANDLE);
+	Coordenadas.X=x;
+	Coordenadas.Y=y;
+	SetConsoleCursorPosition(Manipulador,Coordenadas);
+}
+void product::intro()
+{
+	cout<<brightgreen<<color(10)<<endl;
+	system("cls");
+	gotoxy(50,8);
+	cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*****----->> BIG BAZAR <<-----*****@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
+	gotoxy(50,16);
+	cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*****----->>  BILLING  <<-----*****@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
+	gotoxy(50,24);
+	cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*****----->>  PROJECT  <<-----*****@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
+	cout<<"\n\n\n\n\n\n\n\n \t\t\t\t\t\t*****************************~~~~~~MADE BY : Preethi.H.R. \t\t Nayana Reddy~~~~~*****************************";
+	cout<<"\n\n\n\n\t\t\t\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~COLLEGE : NITTE MEENAKSHI INSTITUTE OF TECHNOLOGY~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+	getch();
+}
+void product::login_logo()
+{
+system("cls");
+int i;
+gotoxy(32,9);
+for(i=0;i<11;i++)
+cout<<"|\n\t\t\t\t";
+gotoxy(112,9);
+for(i=0;i<11;i++)
+cout<<"|\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
+gotoxy(32,8);
+for(i=0;i<80;i++)
+cout<<"_";
+gotoxy(70,10);
+cout<<"ADMISTRATOR LOGIN";
+gotoxy(33,12);
+for(i=0;i<80;i++)
+cout<<"-";
+}
+void product::login_menu()
+{
+int i;
+int flag=0;
+product pr;
+string uname;
+int upassword;
+upassword=123;
+pr.login_logo();
+gotoxy(33,17);
+for(i=0;i<9;i++)
+cout<<"|\n\t\t\t\t";
+gotoxy(112,17);
+for(i=0;i<9;i++)
+cout<<"|\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
+gotoxy(33,8);
+gotoxy(33,25);
+for(i=0;i<80;i++)
+cout<<"_";
+gotoxy(55,15);
+cout<<"LOG IN";
+gotoxy(45,18);
+cout<<"Enter username :\t";
+cin>>uname;
+if(uname=="preethi"||uname=="nayana")
+{
+	gotoxy(45,20);
+	cout<<"Enter Password :\t";
+	cin>>upassword;
+	if(upassword==123)
+	{
+		pr.admin_menu();
+	}
+	else
+	gotoxy(45,22);
+	cout<<"Sorry,You had entered Wrong Password\n";
+	exit(0);
+}
+else
+gotoxy(45,20);
+cout<<"Sorry,You had entered Wrong Username";
+exit(0);
+}
+
+void product::admin_menu()
+{
+	cout<<brightred<<color(12)<<endl;
+	system("cls");
+	char ch2;
+	cout<<"\n\n\n\t\t\t\t\t\t\t%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  ADMINISTRATION MENU  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n";
+	cout<<"\t\t\t_________________________________________________________________________________________________________________________________________________________________";
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\t((((((((((((((******  1: CREATE PRODUCT        ******))))))))))))))";
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\t((((((((((((((******  2: DISPLAY ALL PRODUCT   ******))))))))))))))";
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\t((((((((((((((******  3: QUERY                 ******))))))))))))))";
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\t((((((((((((((******  4: MODIFY PRODUCT        ******))))))))))))))";
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\t((((((((((((((******  5: DELETE PRODUCT        ******))))))))))))))";
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\t((((((((((((((******  6: VIEW PRODUCT MENU     ******))))))))))))))";
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\t((((((((((((((******  7: BACK TO MAIN MENU     ******))))))))))))))";
+	cout<<"\n\n\n\n\t\t\t\t\t\t\t\t\tPlease enter your choice (1-7) :  ";
+	ch2=getche();
+	switch(ch2)
+	{
+		case '1':system("cls");
+		pr.write_product();
+		pr.admin_menu();
+		break;
+		case '2':pr.display_all();
+		pr.admin_menu();
+		break;
+		case '3':int num;
+		system("cls");
+		cout<<"\n\n\n\n\t\t\t\t\t\t %%%%%%%%%**************+++++++++++++**************  CLARIFICATION  ***************++++++++++++++**************%%%%%%%%%%";
+		cout<<"\n\n\n\n\n\t\t\t\t\t\t\t\t\t\t\tPlease enter the Product No.  :  ";
+		cin>>num;
+		pr.display_all(num);
+		pr.admin_menu();
+		break;
+		case '4':pr.modify_product();
+		admin_menu();
+		break;
+		case '5':pr.delete_product();
+		pr.admin_menu();
+		break;
+		case '6':pr.menu();
+		getch();
+		pr.admin_menu();
+		case '7':exit(0);
+		default:cout<<"\a";
+		
+	}
+}
+int main()
+{
+	char ch;
+	pr.intro();
+	cout<<pink<<color(13)<<endl;
+	do
+	{
+		system("cls");
+		cout<<"\n\t\t\t\t\t\t$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$-->> Welcome to Big Bazar Billing System Application <<--$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n\n\n";
+		cout<<"\t\t\t\t\t\t**************************************************************************************************************************\n\n";
+		cout<<"\n\n\n\t\t\t\t\t\t\t\t*************************************MAIN MENU********************************************\n";
+		cout<<"\t\t\t\t\t\t\t__________________________________________________________________________________________________________";
+		cout<<"\n\n\t\t\t\t\t\t\t\t\t\t\t\t01 : CUSTOMER";
+		cout<<"\n\n\t\t\t\t\t\t\t\t\t\t\t\t02 : ADMINISTRATOR";
+		cout<<"\n\n\t\t\t\t\t\t\t\t\t\t\t\t03 : EXIT";
+		cout<<"\n\n\t\t\t\t\t\t\t\t\t\t\tPlease select your option";
+		ch=getche();
+		switch(ch)
+		{
+			case '1':system("cls");
+			pr.place_order();
+			getch();
+			break;
+			case '2':pr.login_logo();
+			pr.login_menu();
+			pr.admin_menu();
+			break;
+			case '3':exit(0);
+			default:cout<<"\a";
+		}
+	}
+	while(ch!='3');
+}
