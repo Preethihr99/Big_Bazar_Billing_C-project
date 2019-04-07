@@ -11,7 +11,21 @@ In this language C++ language is used to maintain all the data. It provides many
 
 FLOW DIAGRAM OF THE PROJECT :-
 
+![c1](https://user-images.githubusercontent.com/47209023/55679208-3509af80-5925-11e9-8ce3-16148763e5e4.PNG)
+
 RESULTS SNAPSHOTS :-
+
+![c3](https://user-images.githubusercontent.com/47209023/55679210-42bf3500-5925-11e9-8910-cdc65e6b15b9.PNG)
+![c4](https://user-images.githubusercontent.com/47209023/55679211-42bf3500-5925-11e9-91c6-75e97b799adf.PNG)
+![c5](https://user-images.githubusercontent.com/47209023/55679212-4357cb80-5925-11e9-81f7-d89d1f5d55b2.PNG)
+![c2](https://user-images.githubusercontent.com/47209023/55679214-4357cb80-5925-11e9-9a18-3e80d19507fe.PNG)
+![c7](https://user-images.githubusercontent.com/47209023/55679217-4ce13380-5925-11e9-9b3c-6075e718560e.PNG)
+![c8](https://user-images.githubusercontent.com/47209023/55679218-4ce13380-5925-11e9-914c-6b10b1a23f9a.PNG)
+![c9](https://user-images.githubusercontent.com/47209023/55679219-4ce13380-5925-11e9-9769-5856d1d4fb7d.PNG)
+![c6](https://user-images.githubusercontent.com/47209023/55679220-4d79ca00-5925-11e9-95f2-733be6e5caf3.PNG)
+![c11](https://user-images.githubusercontent.com/47209023/55679223-579bc880-5925-11e9-9b58-500ad24b6882.PNG)
+![c10](https://user-images.githubusercontent.com/47209023/55679224-579bc880-5925-11e9-9964-7e831ece9626.PNG)
+
 
 CONCLUSION :-
 
